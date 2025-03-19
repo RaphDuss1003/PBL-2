@@ -1,0 +1,196 @@
+def find_tags(html_code):
+    """Extract all tags from the HTML code."""
+    tags = []
+    i = 0
+    while i < len(html_code):
+        if html_code[i] == '<':
+            end_index = html_code.find('>', i)
+            if end_index == -1:
+                break
+            tags.append((i, html_code[i:end_index + 1]))
+            i = end_index
+        i += 1
+    return tags
+
+def is_closing_tag(tag):
+    """Check if a tag is a closing tag."""
+    return tag.startswith('</')
+
+def get_tag_name(tag):
+    """Extract the name of the tag."""
+    if is_closing_tag(tag):
+        return tag[2:-1].split()[0]
+    return tag[1:].split()[0]
+
+def check_html_structure(html_code):
+    """Check the structure of the HTML code and report errors."""
+    tags = find_tags(html_code)
+    stack = []
+    errors = []
+
+    for index, tag in tags:
+        line_number = html_code[:index].count('\n') + 1
+        if is_closing_tag(tag):
+            tag_name = get_tag_name(tag)
+            if stack and stack[-1] == tag_name:
+                stack.pop()
+            else:
+                errors.append(f"Error at line {line_number}: Mismatched closing tag </{tag_name}>")
+        else:
+            tag_name = get_tag_name(tag)
+            stack.append(tag_name)
+
+    if stack:
+        for tag in stack:
+            errors.append(f"Error: Unclosed tag <{tag}>")
+
+    return errors
+
+def suggest_corrections(errors):
+    """Provide suggestions for correcting the errors."""
+    suggestions = []
+    for error in errors:
+        if "Mismatched closing tag" in error:
+            suggestions.append("Suggestion: Ensure that all opening tags have corresponding closing tags in the correct order.")
+        elif "Unclosed tag" in error:
+            suggestions.append("Suggestion: Make sure to close all opened tags before the end of the document.")
+    return suggestions
+
+def format_report(errors, suggestions):
+    """Format the error report with suggestions."""
+    report = "HTML Structure Check Report:\n\n"
+    report += "Errors Found:\n"
+    for error in errors:
+        report += f"- {error}\n"
+    report += "\nSuggestions for Correction:\n"
+    for suggestion in suggestions:
+        report += f"- {suggestion}\n"
+    return report
+
+def main(html_code):
+    """Main function to check HTML structure and generate a report."""
+    errors = check_html_structure(html_code)
+    if errors:
+        suggestions = suggest_corrections(errors)
+        report = format_report(errors, suggestions)
+        print(report)
+    else:
+        print("No structural errors found.")
+
+# The main function can be called with HTML code to check its structure.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def read_html_file(file_path):
+    """Read HTML content from a file."""
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            return file.read()
+    except FileNotFoundError:
+        return f"Error: The file at path '{file_path}' was not found."
+    except Exception as e:
+        return f"Error: An unexpected error occurred while reading the file: {e}"
+
+def find_tags(html_code):
+    """Extract all tags from the HTML code."""
+    tags = []
+    i = 0
+    while i < len(html_code):
+        if html_code[i] == '<':
+            end_index = html_code.find('>', i)
+            if end_index == -1:
+                break
+            tags.append((i, html_code[i:end_index + 1]))
+            i = end_index
+        i += 1
+    return tags
+
+def is_closing_tag(tag):
+    """Check if a tag is a closing tag."""
+    return tag.startswith('</')
+
+def get_tag_name(tag):
+    """Extract the name of the tag."""
+    if is_closing_tag(tag):
+        return tag[2:-1].split()[0]
+    return tag[1:].split()[0]
+
+def check_html_structure(html_code):
+    """Check the structure of the HTML code and report errors."""
+    tags = find_tags(html_code)
+    stack = []
+    errors = []
+
+    for index, tag in tags:
+        line_number = html_code[:index].count('\n') + 1
+        if is_closing_tag(tag):
+            tag_name = get_tag_name(tag)
+            if stack and stack[-1] == tag_name:
+                stack.pop()
+            else:
+                errors.append(f"Error at line {line_number}: Mismatched closing tag </{tag_name}>")
+        else:
+            tag_name = get_tag_name(tag)
+            stack.append(tag_name)
+
+    if stack:
+        for tag in stack:
+            errors.append(f"Error: Unclosed tag <{tag}>")
+
+    return errors
+
+def suggest_corrections(errors):
+    """Provide suggestions for correcting the errors."""
+    suggestions = []
+    for error in errors:
+        if "Mismatched closing tag" in error:
+            suggestions.append("Suggestion: Ensure that all opening tags have corresponding closing tags in the correct order.")
+        elif "Unclosed tag" in error:
+            suggestions.append("Suggestion: Make sure to close all opened tags before the end of the document.")
+    return suggestions
+
+def format_report(errors, suggestions):
+    """Format the error report with suggestions."""
+    report = "HTML Structure Check Report:\n\n"
+    report += "Errors Found:\n"
+    for error in errors:
+        report += f"- {error}\n"
+    report += "\nSuggestions for Correction:\n"
+    for suggestion in suggestions:
+        report += f"- {suggestion}\n"
+    return report
+
+def main(file_path):
+    """Main function to check HTML structure from a file and generate a report."""
+    html_code = read_html_file(file_path)
+    if html_code.startswith("Error"):
+        print(html_code)
+        return
+
+    errors = check_html_structure(html_code)
+    if errors:
+        suggestions = suggest_corrections(errors)
+        report = format_report(errors, suggestions)
+        print(report)
+    else:
+        print("No structural errors found.")
+
+# Example usage:
+# main('path_to_your_html_file.html')
